@@ -1,2 +1,3 @@
-.ORIG x3000
-
+global _start
+_start:
+    ret
