@@ -1,3 +1,4 @@
 global _start
 _start:
-    ret
+    mov rax, 60
+    
