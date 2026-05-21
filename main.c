@@ -30,9 +30,13 @@ typedef struct {
 
 int main() {
     FILE *file;
-    file = fopen("test.unn", "r");
+    file = fopen("C:\\Users\\Owner\\CLionProjects\\Compiler\\test.txt", "r");
     char current = fgetc(file);
 
+    if (file == NULL) {
+        printf("Error reading file\n");
+        return 1;
+    }
     while (current != EOF) {
         printf("%c", current);
         current = fgetc(file);
