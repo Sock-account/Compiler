@@ -38,7 +38,10 @@ int main() {
         return 1;
     }
     while (current != EOF) {
-        printf("%c", current);
+        if (current == ';') {
+            printf("FOUND SEMICOLON\n");
+        }
+        //printf("%c", current);
         current = fgetc(file);
     }
 
