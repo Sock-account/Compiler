@@ -65,6 +65,12 @@ void lexer(FILE *file) {
                 printf("FOUND DIGIT: %d", current - 48);
             }
             }
+        else if (isalpha(current)) {
+            if (isdigit(previous)) {
+                printf("\n");
+            }
+            printf("FOUND CHARACTER: %c\n", current);
+        }
 
         //printf("%c", current);
         previous = current;
