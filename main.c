@@ -28,9 +28,31 @@ typedef struct {
 typedef struct {
     TokenTypeSeparator type;
 } TokenSeparator;
+
+TokenLiteral generate_number(char current, FILE *file) {
+    TokenLiteral token;
+    token.type = INT;
+    int value = 0;
+    while (isdigit(current) && current != EOF) {
+        if (!isdigit(current)) {
+            break;
+        }
+        value += (int)current - '0';
+        printf("%c", current);
+        current = fgetc(file);
+
+    }
+    token.value = value;
+    return token;
+}
+
 void lexer(FILE *file) {
     char current = fgetc(file);
     char previous;
+    TokenLiteral token;
+    token.type = INT;
+    char *value = malloc(sizeof(char) * 8);
+    int value_index = 0;
     if (file == NULL) {
         printf("Error reading file\n");
         return;
@@ -71,7 +93,18 @@ void lexer(FILE *file) {
             }
             printf("FOUND CHARACTER: %c\n", current);
         }
+        while (isdigit(current) && current != EOF) {
+            while (isdigit(current) && current != EOF) {
+                if (!isdigit(current)) {
+                    break;
+                }
+                value = (int)current - '0';
+                printf("%c", current);
+                current = fgetc(file);
 
+            }
+            token.value = value;
+        }
         //printf("%c", current);
         previous = current;
         current = fgetc(file);
