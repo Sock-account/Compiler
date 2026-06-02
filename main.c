@@ -69,8 +69,7 @@ void lexer(FILE *file) {
 
         }
         else if (isdigit(current)) {
-            generate_number(current, file);
-            printf("FOUND DIGIT: %d", current - 48);
+            printf("FOUND DIGIT: %d\n", current - 48);
             }
         else if (isalpha(current)) {
             printf("FOUND CHARACTER: %c\n", current);
