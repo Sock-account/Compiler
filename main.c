@@ -32,7 +32,8 @@ typedef struct {
 TokenLiteral generate_number(char current, FILE *file) {
     TokenLiteral token;
     token.type = INT;
-    int value = 0;
+    char *value = malloc(sizeof(char) * 8);
+    int value_index = 0;
     while (isdigit(current) && current != EOF) {
         if (!isdigit(current)) {
             break;
@@ -48,11 +49,6 @@ TokenLiteral generate_number(char current, FILE *file) {
 
 void lexer(FILE *file) {
     char current = fgetc(file);
-    char previous;
-    TokenLiteral token;
-    token.type = INT;
-    char *value = malloc(sizeof(char) * 8);
-    int value_index = 0;
     if (file == NULL) {
         printf("Error reading file\n");
         return;
@@ -61,36 +57,22 @@ void lexer(FILE *file) {
         if (current == ';') {
             // Each if branch excluding the one for detecting if current is a digit
             // has to check if previous is a digit so that multi-digit numbers display correctly on the same line.
-            if (isdigit(previous)) {
-                printf("\n");
-            }
             printf("FOUND SEMICOLON\n");
         }
         else if (current == '(') {
-            if (isdigit(previous)) {
-                printf("\n");
-            }
+
             printf("FOUND OPEN PAREN\n");
         }
         else if (current == ')') {
-            if (isdigit(previous)) {
-                printf("\n");
-            }
+
             printf("FOUND CLOSE PAREN\n");
 
         }
         else if (isdigit(current)) {
-            if (isdigit(previous)) {
-                printf("%d", current - 48);
-            }
-            else {
-                printf("FOUND DIGIT: %d", current - 48);
-            }
+            generate_number(current, file);
+            printf("FOUND DIGIT: %d", current - 48);
             }
         else if (isalpha(current)) {
-            if (isdigit(previous)) {
-                printf("\n");
-            }
             printf("FOUND CHARACTER: %c\n", current);
         }
         while (isdigit(current) && current != EOF) {
@@ -98,15 +80,12 @@ void lexer(FILE *file) {
                 if (!isdigit(current)) {
                     break;
                 }
-                value = (int)current - '0';
                 printf("%c", current);
                 current = fgetc(file);
-
             }
-            token.value = value;
+
         }
         //printf("%c", current);
-        previous = current;
         current = fgetc(file);
     }
 }
