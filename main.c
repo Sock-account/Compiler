@@ -29,7 +29,7 @@ typedef struct {
     TokenTypeSeparator type;
 } TokenSeparator;
 
-TokenLiteral generate_number(char current, FILE *file) {
+/*TokenLiteral generate_number(char current, FILE *file) {
     TokenLiteral token;
     token.type = INT;
     char *value = malloc(sizeof(char) * 8);
@@ -45,10 +45,12 @@ TokenLiteral generate_number(char current, FILE *file) {
     }
     token.value = value;
     return token;
-}
+}*/
 
 void lexer(FILE *file) {
     char current = fgetc(file);
+    char previous;
+
     if (file == NULL) {
         printf("Error reading file\n");
         return;
@@ -57,24 +59,40 @@ void lexer(FILE *file) {
         if (current == ';') {
             // Each if branch excluding the one for detecting if current is a digit
             // has to check if previous is a digit so that multi-digit numbers display correctly on the same line.
+            if (isdigit(previous)) {
+                printf("\n");
+            }
             printf("FOUND SEMICOLON\n");
         }
         else if (current == '(') {
-
+            if (isdigit(previous)) {
+                printf("\n");
+            }
             printf("FOUND OPEN PAREN\n");
         }
         else if (current == ')') {
-
+            if (isdigit(previous)) {
+                printf("\n");
+            }
             printf("FOUND CLOSE PAREN\n");
 
         }
         else if (isdigit(current)) {
-            printf("FOUND DIGIT: %d\n", current - 48);
+            if (isdigit(previous)) {
+                printf("%d", current - 48);
             }
+            else {
+                printf("FOUND DIGIT: %d", current - 48);
+            }
+        }
+
         else if (isalpha(current)) {
+            if (isdigit(previous)) {
+                printf("\n");
+            }
             printf("FOUND CHARACTER: %c\n", current);
         }
-        while (isdigit(current) && current != EOF) {
+        /*while (isdigit(current) && current != EOF) {
             while (isdigit(current) && current != EOF) {
                 if (!isdigit(current)) {
                     break;
@@ -83,7 +101,8 @@ void lexer(FILE *file) {
                 current = fgetc(file);
             }
 
-        }
+        }*/
+        previous = current;
         //printf("%c", current);
         current = fgetc(file);
     }
