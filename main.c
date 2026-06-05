@@ -29,23 +29,25 @@ typedef struct {
     TokenTypeSeparator type;
 } TokenSeparator;
 
-/*TokenLiteral generate_number(char current, FILE *file) {
-    TokenLiteral token;
-    token.type = INT;
+TokenLiteral generate_number(char current, FILE *file) {
+    TokenLiteral *token = malloc(sizeof(TokenLiteral));
+    token->type = INT;
     char *value = malloc(sizeof(char) * 8);
     int value_index = 0;
     while (isdigit(current) && current != EOF) {
         if (!isdigit(current)) {
             break;
         }
-        value += (int)current - '0';
-        printf("%c", current);
+        value[value_index] = current;
+        value_index++;
+        printf("%c\n", token->value);
         current = fgetc(file);
 
     }
-    token.value = value;
-    return token;
-}*/
+    token->value = *value;
+    free(value);
+    return *token;
+}
 
 void lexer(FILE *file) {
     char current = fgetc(file);
@@ -59,31 +61,19 @@ void lexer(FILE *file) {
         if (current == ';') {
             // Each if branch excluding the one for detecting if current is a digit
             // has to check if previous is a digit so that multi-digit numbers display correctly on the same line.
-            if (isdigit(previous)) {
-                printf("\n");
-            }
+            // This approach is not what is needed
             printf("FOUND SEMICOLON\n");
         }
         else if (current == '(') {
-            if (isdigit(previous)) {
-                printf("\n");
-            }
             printf("FOUND OPEN PAREN\n");
         }
         else if (current == ')') {
-            if (isdigit(previous)) {
-                printf("\n");
-            }
             printf("FOUND CLOSE PAREN\n");
 
         }
         else if (isdigit(current)) {
-            if (isdigit(previous)) {
-                printf("%d", current - 48);
-            }
-            else {
-                printf("FOUND DIGIT: %d", current - 48);
-            }
+        generate_number(current, file);
+            printf("FOUND DIGIT: %d", current);
         }
 
         else if (isalpha(current)) {
