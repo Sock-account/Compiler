@@ -40,18 +40,17 @@ TokenLiteral generate_number(char current, FILE *file) {
         }
         value[value_index] = current;
         value_index++;
-        printf("%c\n", token->value);
+        //printf("%c", current);
         current = fgetc(file);
-
     }
-    token->value = *value;
-    free(value);
+    printf("%c", token->value);
+    token->value = (int)*value;
     return *token;
 }
 
 void lexer(FILE *file) {
     char current = fgetc(file);
-    char previous;
+    //char previous;
 
     if (file == NULL) {
         printf("Error reading file\n");
@@ -63,23 +62,15 @@ void lexer(FILE *file) {
             // has to check if previous is a digit so that multi-digit numbers display correctly on the same line.
             // This approach is not what is needed
             printf("FOUND SEMICOLON\n");
-        }
-        else if (current == '(') {
+        }else if (current == '(') {
             printf("FOUND OPEN PAREN\n");
-        }
-        else if (current == ')') {
+        }else if (current == ')') {
             printf("FOUND CLOSE PAREN\n");
-
-        }
-        else if (isdigit(current)) {
-        generate_number(current, file);
-            printf("FOUND DIGIT: %d", current);
-        }
-
-        else if (isalpha(current)) {
-            if (isdigit(previous)) {
-                printf("\n");
-            }
+        }else if (isdigit(current)) {
+        TokenLiteral test_token = generate_number(current, file);
+            //printf("FOUND DIGIT: %d", current);
+            printf("TEST TOKEN VALUE: %s\n", &test_token.value);
+        }else if (isalpha(current)) {
             printf("FOUND CHARACTER: %c\n", current);
         }
         /*while (isdigit(current) && current != EOF) {
@@ -92,7 +83,7 @@ void lexer(FILE *file) {
             }
 
         }*/
-        previous = current;
+        //previous = current;
         //printf("%c", current);
         current = fgetc(file);
     }
