@@ -43,7 +43,7 @@ TokenLiteral generate_number(char current, FILE *file) {
         //printf("%c", current);
         current = fgetc(file);
     }
-    printf("%c", token->value);
+    //printf("%c", token->value);
     token->value = (int)*value;
     return *token;
 }
