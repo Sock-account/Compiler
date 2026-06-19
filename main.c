@@ -15,7 +15,6 @@ typedef enum {
     INT ,
     } TokenTypeLiteral;
 
-
 typedef struct {
     TokenTypeKeyword type;
 } TokenKeyword;
@@ -43,8 +42,8 @@ TokenLiteral generate_number(char current, FILE *file) {
         //printf("%c", current);
         current = fgetc(file);
     }
-    printf("%c", token->value);
-    token->value = (int)*value;
+    //printf("%c", token->value);
+    token->value = atoi(value);
     return *token;
 }
 
@@ -69,7 +68,7 @@ void lexer(FILE *file) {
         }else if (isdigit(current)) {
         TokenLiteral test_token = generate_number(current, file);
             //printf("FOUND DIGIT: %d", current);
-            printf("TEST TOKEN VALUE: %s\n", &test_token.value);
+            printf("TEST TOKEN VALUE: %d\n", test_token.value);
         }else if (isalpha(current)) {
             printf("FOUND CHARACTER: %c\n", current);
         }
