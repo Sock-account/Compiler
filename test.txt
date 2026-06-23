@@ -1,2 +1,2 @@
-exit(120);
+exit(12);
 int x = y;

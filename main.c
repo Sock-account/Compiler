@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <string.h>
 typedef enum {
     SEMI,
     OPEN_PAREN,
@@ -52,13 +53,10 @@ TokenKeyword *generate_keyword(char current, FILE *file) {
     char *keyword = malloc(sizeof(char) * 4);
     int keyword_index = 0;
     while (isalpha(current) && current != EOF) {
-    keyword[keyword_index] = current;
+        keyword[keyword_index] = current;
         current = fgetc(file);
     }
-    for (int i = 0; i < keyword_index; i++) {
-
-    }
-    if (keyword == "exit") {
+    if (strcmp(keyword, "exit")) {
         token->type = EXIT;
     }
     return token;
@@ -87,20 +85,10 @@ void lexer(FILE *file) {
             //printf("FOUND DIGIT: %d", current);
             printf("TEST TOKEN VALUE: %d\n", test_token.value);
         }else if (isalpha(current)) {
-            printf("FOUND CHARACTER: %c\n", current);
+            TokenKeyword *test_keyword = generate_keyword(current, file);
+            printf("%c\n", current);
+            //printf("FOUND CHARACTER: %c\n", current)
         }
-        /*while (isdigit(current) && current != EOF) {
-            while (isdigit(current) && current != EOF) {
-                if (!isdigit(current)) {
-                    break;
-                }
-                printf("%c", current);
-                current = fgetc(file);
-            }
-
-        }*/
-        //previous = current;
-        //printf("%c", current);
         current = fgetc(file);
     }
 }
