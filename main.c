@@ -50,13 +50,24 @@ TokenLiteral generate_number(char current, FILE *file) {
 
 TokenKeyword *generate_keyword(char current, FILE *file) {
     TokenKeyword *token = malloc(sizeof(TokenKeyword));
-    char *keyword = malloc(sizeof(char) * 4);
+    char *keyword = malloc(sizeof(char) * 8);
     int keyword_index = 0;
+    if (keyword == NULL) {
+        free(token);
+        return NULL;
+    }
     while (isalpha(current) && current != EOF) {
         keyword[keyword_index] = current;
         current = fgetc(file);
+        keyword_index++;
     }
-    if (strcmp(keyword, "exit")) {
+    if (keyword_index > 0) {
+        keyword[keyword_index] = '\0';
+    } else {
+        keyword[0] = '\0';  // Handle empty string case
+    }
+    //printf("TOKEN %s\n", keyword);
+    if (strcmp(keyword, "exit") == 0) {
         token->type = EXIT;
     }
     return token;
@@ -71,10 +82,8 @@ void lexer(FILE *file) {
         return;
     }
     while (current != EOF) {
+        printf("curr: %c\n", current);
         if (current == ';') {
-            // Each if branch excluding the one for detecting if current is a digit
-            // has to check if previous is a digit so that multi-digit numbers display correctly on the same line.
-            // This approach is not what is needed
             printf("FOUND SEMICOLON\n");
         }else if (current == '(') {
             printf("FOUND OPEN PAREN\n");
@@ -86,8 +95,11 @@ void lexer(FILE *file) {
             printf("TEST TOKEN VALUE: %d\n", test_token.value);
         }else if (isalpha(current)) {
             TokenKeyword *test_keyword = generate_keyword(current, file);
-            printf("%c\n", current);
+            printf("Alpha %c\n", test_keyword->type);
             //printf("FOUND CHARACTER: %c\n", current)
+            if (test_keyword->type == EXIT) {
+                printf("EXIT\n");
+            }
         }
         current = fgetc(file);
     }
