@@ -47,12 +47,12 @@ TokenLiteral generate_number(char *current, int *current_index) {
     return *token;
 }
 
-TokenKeyword *generate_keyword(char *current, int *current_index) {
+TokenKeyword *generate_keyword(char *current, int current_index) {
     TokenKeyword *token = malloc(sizeof(TokenKeyword));
     char *keyword = malloc(sizeof(char) * 8);
     int keyword_index = 0;
-    while (current[*current_index] != '\0' && isalpha(current[*current_index])) {
-        keyword[keyword_index] = current[*current_index];
+    while (current[current_index] != '\0' && isalpha(current[current_index])) {
+        keyword[keyword_index] = current[current_index];
         keyword_index++;
         current_index++;
     }
@@ -97,8 +97,8 @@ void lexer(FILE *file) {
         TokenLiteral test_token = generate_number(current, &current_index);
             printf("TEST TOKEN VALUE: %d\n", test_token.value);
         }else if (isalpha(current[current_index])) {
-            TokenKeyword *test_keyword = generate_keyword(current, &current_index);
-            printf("Alpha %c\n", test_keyword->type);
+            TokenKeyword *test_keyword = generate_keyword(current, current_index);
+            //printf("Alpha %c\n", test_keyword->type);
             printf("FOUND CHARACTER: %c\n", current[current_index]);
 
         }
