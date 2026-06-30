@@ -29,44 +29,38 @@ typedef struct {
     TokenTypeSeparator type;
 } TokenSeparator;
 
-TokenLiteral generate_number(char current, FILE *file) {
+TokenLiteral generate_number(char *current, int *current_index) {
     TokenLiteral *token = malloc(sizeof(TokenLiteral));
     token->type = INT;
     char *value = malloc(sizeof(char) * 8);
     int value_index = 0;
-    while (isdigit(current) && current != EOF) {
-        if (!isdigit(current)) {
+    while (isdigit(*current) && current[*current_index] != '\0') {
+        if (!isdigit(*current)) {
             break;
         }
-        value[value_index] = current;
+        value[value_index] = current[*current_index];
         value_index++;
-        //printf("%c", current);
-        current = fgetc(file);
+        current_index++;
     }
     //printf("%c", token->value);
     token->value = atoi(value);
     return *token;
 }
 
-TokenKeyword *generate_keyword(char *current, FILE *file) {
+TokenKeyword *generate_keyword(char *current, int *current_index) {
     TokenKeyword *token = malloc(sizeof(TokenKeyword));
     char *keyword = malloc(sizeof(char) * 8);
     int keyword_index = 0;
-    if (keyword == NULL) {
-        free(token);
-        return NULL;
-    }
-    while (isalpha(*current) && *current != EOF) {
-        keyword[keyword_index] = *current;
-        *current = fgetc(file);
+    while (current[*current_index] != '\0' && isalpha(current[*current_index])) {
+        keyword[keyword_index] = current[*current_index];
         keyword_index++;
+        current_index++;
     }
     if (keyword_index > 0) {
         keyword[keyword_index] = '\0';
     } else {
         keyword[0] = '\0';  // Handle empty string case
     }
-    //printf("TOKEN %s\n", keyword);
     if (strcmp(keyword, "exit") == 0) {
         token->type = EXIT;
     }
@@ -74,34 +68,42 @@ TokenKeyword *generate_keyword(char *current, FILE *file) {
 }
 
 void lexer(FILE *file) {
-    char current = fgetc(file);
-    //char previous;
+    int length;
+    char *buffer = 0;
+    fseek(file, 0, SEEK_END);
+    length = ftell(file);
+    fseek(file, 0, SEEK_SET);
+    buffer = malloc(sizeof(char) * length);
+    fread(buffer, 1, length, file);
+    fclose(file);
+    buffer[length + 1] = '\0';
+    char *current = malloc(sizeof (char) * length + 1);
+    current = buffer;
+    int current_index = 0;
 
     if (file == NULL) {
         printf("Error reading file\n");
         return;
     }
-    while (current != EOF) {
-        printf("curr: %c\n", current);
-        if (current == ';') {
+    while (current[current_index] != '\0') {
+        printf("curr: %c\n", current[current_index]);
+        if (current[current_index] == ';') {
             printf("FOUND SEMICOLON\n");
-        }else if (current == '(') {
+        }else if (current[current_index] == '(') {
             printf("FOUND OPEN PAREN\n");
-        }else if (current == ')') {
+        }else if (current[current_index] == ')') {
             printf("FOUND CLOSE PAREN\n");
-        }else if (isdigit(current)) {
-        TokenLiteral test_token = generate_number(current, file);
-            //printf("FOUND DIGIT: %d", current);
+        }else if (isdigit(current[current_index])) {
+        TokenLiteral test_token = generate_number(current, &current_index);
             printf("TEST TOKEN VALUE: %d\n", test_token.value);
-        }else if (isalpha(current)) {
-            TokenKeyword *test_keyword = generate_keyword(&current, file);
+        }else if (isalpha(current[current_index])) {
+            TokenKeyword *test_keyword = generate_keyword(current, &current_index);
             printf("Alpha %c\n", test_keyword->type);
-            //printf("FOUND CHARACTER: %c\n", current)
-            if (test_keyword->type == EXIT) {
-                printf("EXIT\n");
-            }
+            printf("FOUND CHARACTER: %c\n", current[current_index]);
+
         }
-        current = fgetc(file);
+        current_index++;
+        //current = fgetc(file);
     }
 }
 int main() {
