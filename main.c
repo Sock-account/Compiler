@@ -35,7 +35,7 @@ TokenLiteral generate_number(char *current, int current_index) {
     char *value = malloc(sizeof(char) * 8);
     int value_index = 0;
     while (isdigit(current[current_index]) && current[current_index] != '\0') {
-        if (!isdigit(*current)) {
+        if (!isdigit(current[current_index])) {
             break;
         }
         value[value_index] = current[current_index];
@@ -96,6 +96,11 @@ void lexer(FILE *file) {
         }else if (isdigit(current[current_index])) {
         TokenLiteral test_token = generate_number(current, current_index);
             printf("TEST TOKEN VALUE: %d\n", test_token.value);
+            int token_value = test_token.value;
+            while (token_value >= 10) {
+                token_value = token_value / 10;
+                current_index++;
+            }
         }else if (isalpha(current[current_index])) {
             TokenKeyword *test_keyword = generate_keyword(current, current_index);
             //printf("Alpha %c\n", test_keyword->type);
