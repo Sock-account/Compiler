@@ -53,6 +53,7 @@ TokenKeyword *generate_keyword(char *current, int current_index) {
     int keyword_index = 0;
     while (current[current_index] != '\0' && isalpha(current[current_index])) {
         keyword[keyword_index] = current[current_index];
+        printf("%c", current[current_index]);
         keyword_index++;
         current_index++;
     }
@@ -62,6 +63,7 @@ TokenKeyword *generate_keyword(char *current, int current_index) {
         keyword[0] = '\0';  // Handle empty string case
     }
     if (strcmp(keyword, "exit") == 0) {
+        printf("TYPE EXIT\n");
         token->type = EXIT;
     }
     return token;
@@ -86,7 +88,7 @@ void lexer(FILE *file) {
         return;
     }
     while (current[current_index] != '\0') {
-        printf("curr: %c\n", current[current_index]);
+        //printf("curr: %c\n", current[current_index]);
         if (current[current_index] == ';') {
             printf("FOUND SEMICOLON\n");
         }else if (current[current_index] == '(') {
@@ -104,7 +106,7 @@ void lexer(FILE *file) {
         }else if (isalpha(current[current_index])) {
             TokenKeyword *test_keyword = generate_keyword(current, current_index);
             //printf("Alpha %c\n", test_keyword->type);
-            printf("FOUND CHARACTER: %c\n", current[current_index]);
+            //printf("FOUND CHARACTER: %c\n", current[current_index]);
 
         }
         current_index++;
