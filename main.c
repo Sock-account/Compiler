@@ -53,7 +53,7 @@ TokenKeyword *generate_keyword(char *current, int current_index) {
     int keyword_index = 0;
     while (current[current_index] != '\0' && isalpha(current[current_index])) {
         keyword[keyword_index] = current[current_index];
-        printf("%c", current[current_index]);
+        //printf("%c", current[current_index]);
         keyword_index++;
         current_index++;
     }
