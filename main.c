@@ -9,25 +9,14 @@ typedef enum {
     SEPARATOR,
 
 };
-typedef struct {
-    TokenTypeKeyword type;
-} TokenKeyword;
 
-typedef struct {
-    TokenTypeLiteral type;
-    int value;
-} TokenLiteral;
-
-typedef struct {
-    TokenTypeSeparator type;
-} TokenSeparator;
 typedef struct {
     TokenType type;
     char *value;
 } Token;
 
-TokenLiteral generate_number(char *current, int current_index) {
-    TokenLiteral *token = malloc(sizeof(TokenLiteral));
+Token generate_number(char *current, int current_index) {
+    Token *token = malloc(sizeof(Token));
     token->type = INT;
     char *value = malloc(sizeof(char) * 8);
     int value_index = 0;
@@ -45,8 +34,8 @@ TokenLiteral generate_number(char *current, int current_index) {
     return *token;
 }
 
-TokenKeyword *generate_keyword(char *current, int current_index) {
-    TokenKeyword *token = malloc(sizeof(TokenKeyword));
+Token *generate_keyword(char *current, int current_index) {
+    Token *token = malloc(sizeof(Token));
     char *keyword = malloc(sizeof(char) * 8);
     int keyword_index = 0;
     while (current[current_index] != '\0' && isalpha(current[current_index])) {
@@ -62,7 +51,8 @@ TokenKeyword *generate_keyword(char *current, int current_index) {
     }
     if (strcmp(keyword, "exit") == 0) {
         printf("TYPE EXIT\n");
-        token->type = EXIT;
+        token->type = KEYWORD;
+        token->value = "EXIT";
     }
     return token;
 }
@@ -94,7 +84,7 @@ void lexer(FILE *file) {
         }else if (current[current_index] == ')') {
             printf("FOUND CLOSE PAREN\n");
         }else if (isdigit(current[current_index])) {
-        TokenLiteral test_token = generate_number(current, current_index);
+        Token test_token = generate_number(current, current_index);
             printf("TEST TOKEN VALUE: %d\n", test_token.value);
             int token_value = test_token.value;
             while (token_value >= 10) {
@@ -102,7 +92,7 @@ void lexer(FILE *file) {
                 current_index++;
             }
         }else if (isalpha(current[current_index])) {
-            TokenKeyword *token_keyword = generate_keyword(current, current_index);
+            Token *token_keyword = generate_keyword(current, current_index);
             //printf("Alpha %c\n", test_keyword->type);
             //printf("FOUND CHARACTER: %c\n", current[current_index]);
 
