@@ -2,20 +2,13 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
-typedef enum {
-    SEMI,
-    OPEN_PAREN,
-    CLOSE_PAREN,
-} TokenTypeSeparator;
-
-typedef enum{
-    EXIT ,
-   } TokenTypeKeyword;
 
 typedef enum {
-    INT ,
-    } TokenTypeLiteral;
+    INT,
+    KEYWORD,
+    SEPARATOR,
 
+};
 typedef struct {
     TokenTypeKeyword type;
 } TokenKeyword;
@@ -28,6 +21,10 @@ typedef struct {
 typedef struct {
     TokenTypeSeparator type;
 } TokenSeparator;
+typedef struct {
+    TokenType type;
+    char *value;
+} Token;
 
 TokenLiteral generate_number(char *current, int current_index) {
     TokenLiteral *token = malloc(sizeof(TokenLiteral));
@@ -44,6 +41,7 @@ TokenLiteral generate_number(char *current, int current_index) {
     }
     //printf("%c", token->value);
     token->value = atoi(value);
+    free(value);
     return *token;
 }
 
@@ -104,7 +102,7 @@ void lexer(FILE *file) {
                 current_index++;
             }
         }else if (isalpha(current[current_index])) {
-            TokenKeyword *test_keyword = generate_keyword(current, current_index);
+            TokenKeyword *token_keyword = generate_keyword(current, current_index);
             //printf("Alpha %c\n", test_keyword->type);
             //printf("FOUND CHARACTER: %c\n", current[current_index]);
 
