@@ -8,7 +8,7 @@ typedef enum {
     KEYWORD,
     SEPARATOR,
 
-};
+} TokenType;
 
 typedef struct {
     TokenType type;
@@ -29,8 +29,7 @@ Token generate_number(char *current, int current_index) {
         current_index++;
     }
     //printf("%c", token->value);
-    token->value = atoi(value);
-    free(value);
+    token->value = value;
     return *token;
 }
 
@@ -86,7 +85,7 @@ void lexer(FILE *file) {
         }else if (isdigit(current[current_index])) {
         Token test_token = generate_number(current, current_index);
             printf("TEST TOKEN VALUE: %d\n", test_token.value);
-            int token_value = test_token.value;
+            int token_value = atoi(test_token.value);
             while (token_value >= 10) {
                 token_value = token_value / 10;
                 current_index++;
