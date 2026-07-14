@@ -28,6 +28,7 @@ Token generate_number(char *current, int current_index) {
         value_index++;
         current_index++;
     }
+    value[value_index] = '\0';
     //printf("%c", token->value);
     token->value = value;
     return *token;
@@ -84,7 +85,7 @@ void lexer(FILE *file) {
             printf("FOUND CLOSE PAREN\n");
         }else if (isdigit(current[current_index])) {
         Token test_token = generate_number(current, current_index);
-            printf("TEST TOKEN VALUE: %d\n", test_token.value);
+            printf("TEST TOKEN VALUE: %s\n", test_token.value);
             int token_value = atoi(test_token.value);
             while (token_value >= 10) {
                 token_value = token_value / 10;
