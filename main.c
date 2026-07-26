@@ -15,6 +15,22 @@ typedef struct {
     char *value;
 } Token;
 
+void print_token(Token token) {
+    for (int i = 0; token.value[i] != '\0'; i++){
+        printf("%c", token.value[i]);
+    }
+    printf("\n");
+    if (token.type == INT) {
+        printf("TOKEN TYPE: INT\n");
+    }
+    if (token.type == KEYWORD) {
+        printf("TOKEN TYPE: INT\n");
+    }
+    if (token.type == SEPARATOR) {
+        printf("TOKEN TYPE: SEPARATOR\n");
+    }
+}
+
 Token generate_number(char *current, int current_index) {
     Token *token = malloc(sizeof(Token));
     token->type = INT;
@@ -95,7 +111,7 @@ void lexer(FILE *file) {
             Token *token_keyword = generate_keyword(current, current_index);
             //printf("Alpha %c\n", test_keyword->type);
             //printf("FOUND CHARACTER: %c\n", current[current_index]);
-
+        print_token(*token_keyword);
         }
         current_index++;
         //current = fgetc(file);
