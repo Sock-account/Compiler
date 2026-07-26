@@ -24,7 +24,7 @@ void print_token(Token token) {
         printf("TOKEN TYPE: INT\n");
     }
     if (token.type == KEYWORD) {
-        printf("TOKEN TYPE: INT\n");
+        printf("TOKEN TYPE: KEYWORD\n");
     }
     if (token.type == SEPARATOR) {
         printf("TOKEN TYPE: SEPARATOR\n");
@@ -107,6 +107,7 @@ void lexer(FILE *file) {
                 token_value = token_value / 10;
                 current_index++;
             }
+            print_token(test_token);
         }else if (isalpha(current[current_index])) {
             Token *token_keyword = generate_keyword(current, current_index);
             //printf("Alpha %c\n", test_keyword->type);
