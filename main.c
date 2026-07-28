@@ -17,7 +17,7 @@ typedef struct {
 
 void print_token(Token token) {
     for (int i = 0; token.value[i] != '\0'; i++){
-        printf("%c", token.value[i]);
+        //printf("%c", token.value[i]);
     }
     printf("\n");
     if (token.type == INT) {
@@ -64,7 +64,7 @@ Token *generate_keyword(char *current, int current_index) {
     token->type = KEYWORD;
     token->value = keyword;
     if (strcmp(keyword, "exit") == 0) {
-        printf("TYPE EXIT\n");
+        //printf("TYPE EXIT\n");
     }
     return token;
 }
@@ -91,6 +91,9 @@ void lexer(FILE *file) {
         //printf("curr: %c\n", current[current_index]);
         if (current[current_index] == ';') {
             printf("FOUND SEMICOLON\n");
+            Token *semi_token = malloc(sizeof(Token));
+            semi_token->value = current[current_index];
+        semi_token->type = SEPARATOR;
             current_index++;
         }else if (current[current_index] == '(') {
             printf("FOUND OPEN PAREN\n");
@@ -105,7 +108,7 @@ void lexer(FILE *file) {
             current_index += strlen(test_token.value);
         }else if (isalpha(current[current_index])) {
             Token *token_keyword = generate_keyword(current, current_index);
-            print_token(*token_keyword);
+            //print_token(*token_keyword);
             current_index += strlen(token_keyword->value);
         }else {
             current_index++;
