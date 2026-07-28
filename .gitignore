@@ -1,0 +1,18 @@
+# Build output
+Compiler
+Compiler_debug
+T_test
+
+# CMake
+cmake-build-*/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+
+# Object files and debug info
+*.o
+*.d
+*.dSYM/
+
+# Per-file snapshots used by the CHANGES.md logging hook
+.claude/.snapshots/

@@ -60,15 +60,11 @@ Token *generate_keyword(char *current, int current_index) {
         keyword_index++;
         current_index++;
     }
-    if (keyword_index > 0) {
-        keyword[keyword_index] = '\0';
-    } else {
-        keyword[0] = '\0';  // Handle empty string case
-    }
+    keyword[keyword_index] = '\0';
+    token->type = KEYWORD;
+    token->value = keyword;
     if (strcmp(keyword, "exit") == 0) {
         printf("TYPE EXIT\n");
-        token->type = KEYWORD;
-        token->value = "EXIT";
     }
     return token;
 }
@@ -76,52 +72,51 @@ Token *generate_keyword(char *current, int current_index) {
 void lexer(FILE *file) {
     int length;
     char *buffer = 0;
-    fseek(file, 0, SEEK_END);
-    length = ftell(file);
-    fseek(file, 0, SEEK_SET);
-    buffer = malloc(sizeof(char) * length);
-    fread(buffer, 1, length, file);
-    fclose(file);
-    buffer[length + 1] = '\0';
-    char *current = malloc(sizeof (char) * length + 1);
-    current = buffer;
-    int current_index = 0;
 
     if (file == NULL) {
         printf("Error reading file\n");
         return;
     }
+    fseek(file, 0, SEEK_END);
+    length = ftell(file);
+    fseek(file, 0, SEEK_SET);
+    buffer = malloc(sizeof(char) * length + 1);
+    length = fread(buffer, 1, length, file);
+    fclose(file);
+    buffer[length] = '\0';
+    char *current = buffer;
+    int current_index = 0;
+
     while (current[current_index] != '\0') {
         //printf("curr: %c\n", current[current_index]);
         if (current[current_index] == ';') {
             printf("FOUND SEMICOLON\n");
+            current_index++;
         }else if (current[current_index] == '(') {
             printf("FOUND OPEN PAREN\n");
+            current_index++;
         }else if (current[current_index] == ')') {
             printf("FOUND CLOSE PAREN\n");
+            current_index++;
         }else if (isdigit(current[current_index])) {
-        Token test_token = generate_number(current, current_index);
+            Token test_token = generate_number(current, current_index);
             printf("TEST TOKEN VALUE: %s\n", test_token.value);
-            int token_value = atoi(test_token.value);
-            while (token_value >= 10) {
-                token_value = token_value / 10;
-                current_index++;
-            }
             print_token(test_token);
+            current_index += strlen(test_token.value);
         }else if (isalpha(current[current_index])) {
             Token *token_keyword = generate_keyword(current, current_index);
-            //printf("Alpha %c\n", test_keyword->type);
-            //printf("FOUND CHARACTER: %c\n", current[current_index]);
-        print_token(*token_keyword);
+            print_token(*token_keyword);
+            current_index += strlen(token_keyword->value);
+        }else {
+            current_index++;
         }
-        current_index++;
-        //current = fgetc(file);
     }
 }
 int main() {
     FILE *file;
-    file = fopen("C:\\Users\\Owner\\CLionProjects\\Compiler\\test.txt", "r");
+    file = fopen("test.txt", "r");
     lexer(file);
 
 
 }
+
