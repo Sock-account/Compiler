@@ -557,3 +557,117 @@ This is the reported symptom. The scan functions take the index by value, so con
  }
  int main() {
 ```
+
+## 2026-07-28 20:11 — main.c
+
+The semicolon branch was building its token with `*token->field`, which fails to compile for
+`type` (`->` already dereferences, so the `*` was applied to an enum value) and, for `value`,
+writes a byte through a pointer `malloc` never initialized. Since `print_token` and the `%s`
+callers treat `value` as a C string, the character needs its own one-plus-terminator
+allocation rather than being stored in the pointer field itself — this also makes `SEPARATOR`
+the first separator to actually reach `print_token` instead of only printing inline.
+
+```diff
+--- main.c (before)
++++ main.c (after)
+@@ -17,7 +17,7 @@
+ 
+ void print_token(Token token) {
+     for (int i = 0; token.value[i] != '\0'; i++){
+-        printf("%c", token.value[i]);
++        //printf("%c", token.value[i]);
+     }
+     printf("\n");
+     if (token.type == INT) {
+@@ -64,7 +64,7 @@
+     token->type = KEYWORD;
+     token->value = keyword;
+     if (strcmp(keyword, "exit") == 0) {
+-        printf("TYPE EXIT\n");
++        //printf("TYPE EXIT\n");
+     }
+     return token;
+ }
+@@ -91,6 +91,12 @@
+         //printf("curr: %c\n", current[current_index]);
+         if (current[current_index] == ';') {
+             printf("FOUND SEMICOLON\n");
++            Token *semi_token = malloc(sizeof(Token));
++            semi_token->type = SEPARATOR;
++            semi_token->value = malloc(sizeof(char) * 2);
++            semi_token->value[0] = current[current_index];
++            semi_token->value[1] = '\0';
++            print_token(*semi_token);
+             current_index++;
+         }else if (current[current_index] == '(') {
+             printf("FOUND OPEN PAREN\n");
+@@ -105,7 +111,7 @@
+             current_index += strlen(test_token.value);
+         }else if (isalpha(current[current_index])) {
+             Token *token_keyword = generate_keyword(current, current_index);
+-            print_token(*token_keyword);
++            //print_token(*token_keyword);
+             current_index += strlen(token_keyword->value);
+         }else {
+             current_index++;
+```
+
+## 2026-07-28 20:16 — main.c
+
+Every token was reporting its type but printing a blank line where the lexeme should be, so
+the output gave no way to tell one `TOKEN TYPE: INT` from another. The character loop was
+still running and still emitting the trailing newline — only the write itself had been
+commented out during earlier debugging and never restored.
+
+```diff
+--- main.c (before)
++++ main.c (after)
+@@ -17,7 +17,7 @@
+ 
+ void print_token(Token token) {
+     for (int i = 0; token.value[i] != '\0'; i++){
+-        //printf("%c", token.value[i]);
++        printf("%c", token.value[i]);
+     }
+     printf("\n");
+     if (token.type == INT) {
+```
+
+## 2026-07-28 20:16 — main.c
+
+With `print_token` printing lexemes again, this scaffolding line duplicated the value
+immediately below it and was the only branch in the loop announcing itself in a different
+format from the rest.
+
+```diff
+--- main.c (before)
++++ main.c (after)
+@@ -106,7 +106,6 @@
+             current_index++;
+         }else if (isdigit(current[current_index])) {
+             Token test_token = generate_number(current, current_index);
+-            printf("TEST TOKEN VALUE: %s\n", test_token.value);
+             print_token(test_token);
+             current_index += strlen(test_token.value);
+         }else if (isalpha(current[current_index])) {
+```
+
+## 2026-07-28 20:16 — main.c
+
+Keywords were the one token class the lexer produced but never displayed — `exit` was
+scanned, consumed, and silently discarded, which made the output look like input was being
+skipped rather than merely unprinted.
+
+```diff
+--- main.c (before)
++++ main.c (after)
+@@ -110,7 +110,7 @@
+             current_index += strlen(test_token.value);
+         }else if (isalpha(current[current_index])) {
+             Token *token_keyword = generate_keyword(current, current_index);
+-            //print_token(*token_keyword);
++            print_token(*token_keyword);
+             current_index += strlen(token_keyword->value);
+         }else {
+             current_index++;
+```

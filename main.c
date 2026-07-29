@@ -17,7 +17,7 @@ typedef struct {
 
 void print_token(Token token) {
     for (int i = 0; token.value[i] != '\0'; i++){
-        //printf("%c", token.value[i]);
+        printf("%c", token.value[i]);
     }
     printf("\n");
     if (token.type == INT) {
@@ -92,8 +92,11 @@ void lexer(FILE *file) {
         if (current[current_index] == ';') {
             printf("FOUND SEMICOLON\n");
             Token *semi_token = malloc(sizeof(Token));
-            semi_token->value = current[current_index];
-        semi_token->type = SEPARATOR;
+            semi_token->type = SEPARATOR;
+            semi_token->value = malloc(sizeof(char) * 2);
+            semi_token->value[0] = current[current_index];
+            semi_token->value[1] = '\0';
+            print_token(*semi_token);
             current_index++;
         }else if (current[current_index] == '(') {
             printf("FOUND OPEN PAREN\n");
@@ -103,12 +106,11 @@ void lexer(FILE *file) {
             current_index++;
         }else if (isdigit(current[current_index])) {
             Token test_token = generate_number(current, current_index);
-            printf("TEST TOKEN VALUE: %s\n", test_token.value);
             print_token(test_token);
             current_index += strlen(test_token.value);
         }else if (isalpha(current[current_index])) {
             Token *token_keyword = generate_keyword(current, current_index);
-            //print_token(*token_keyword);
+            print_token(*token_keyword);
             current_index += strlen(token_keyword->value);
         }else {
             current_index++;
