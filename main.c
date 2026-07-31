@@ -16,6 +16,7 @@ typedef struct {
 } Token;
 
 void print_token(Token token) {
+    printf("TOKEN VALUE: ");
     for (int i = 0; token.value[i] != '\0'; i++){
         printf("%c", token.value[i]);
     }
@@ -69,7 +70,7 @@ Token *generate_keyword(char *current, int current_index) {
     return token;
 }
 
-void lexer(FILE *file) {
+Token *lexer(FILE *file) {
     int length;
     char *buffer = 0;
 
@@ -87,6 +88,9 @@ void lexer(FILE *file) {
     char *current = buffer;
     int current_index = 0;
 
+    Token *tokens = malloc(sizeof(Token) * 12);
+    size_t tokens_index = 0;
+
     while (current[current_index] != '\0') {
         //printf("curr: %c\n", current[current_index]);
         if (current[current_index] == ';') {
@@ -98,22 +102,40 @@ void lexer(FILE *file) {
             semi_token->value[1] = '\0';
             print_token(*semi_token);
             current_index++;
+
         }else if (current[current_index] == '(') {
             printf("FOUND OPEN PAREN\n");
+            Token *opar_token = malloc(sizeof(Token));
+            opar_token->type = SEPARATOR;
+            opar_token->value = malloc(sizeof(char) * 2);
+            opar_token->value[0] = current[current_index];
+            opar_token->value[1] = '\0';
+            print_token(*opar_token);
             current_index++;
+
         }else if (current[current_index] == ')') {
             printf("FOUND CLOSE PAREN\n");
+            Token *clopar_token = malloc(sizeof(Token));
+            clopar_token->type = SEPARATOR;
+            clopar_token->value = malloc(sizeof(char) * 2);
+            clopar_token->value[0] = current[current_index];
+            clopar_token->value[1] = '\0';
+            print_token(*clopar_token);
             current_index++;
+
         }else if (isdigit(current[current_index])) {
-            Token test_token = generate_number(current, current_index);
-            print_token(test_token);
-            current_index += strlen(test_token.value);
+            Token digit_token = generate_number(current, current_index);
+            print_token(digit_token);
+            current_index += strlen(digit_token.value);
+
         }else if (isalpha(current[current_index])) {
             Token *token_keyword = generate_keyword(current, current_index);
             print_token(*token_keyword);
             current_index += strlen(token_keyword->value);
+
         }else {
-            current_index++;
+            printf("ERROR: UNRECOGNIZED CHARACTER\n");
+            exit(-1);
         }
     }
 }
