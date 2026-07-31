@@ -76,7 +76,7 @@ Token *lexer(FILE *file) {
 
     if (file == NULL) {
         printf("Error reading file\n");
-        return;
+        exit(-2);
     }
     fseek(file, 0, SEEK_END);
     length = ftell(file);
@@ -101,6 +101,8 @@ Token *lexer(FILE *file) {
             semi_token->value[0] = current[current_index];
             semi_token->value[1] = '\0';
             print_token(*semi_token);
+            tokens[tokens_index] = *semi_token;
+            tokens_index++;
             current_index++;
 
         }else if (current[current_index] == '(') {
@@ -111,6 +113,8 @@ Token *lexer(FILE *file) {
             opar_token->value[0] = current[current_index];
             opar_token->value[1] = '\0';
             print_token(*opar_token);
+            tokens[tokens_index] = *opar_token;
+            tokens_index++;
             current_index++;
 
         }else if (current[current_index] == ')') {
@@ -121,29 +125,39 @@ Token *lexer(FILE *file) {
             clopar_token->value[0] = current[current_index];
             clopar_token->value[1] = '\0';
             print_token(*clopar_token);
+            tokens[tokens_index] = *clopar_token;
+            tokens_index++;
             current_index++;
 
         }else if (isdigit(current[current_index])) {
             Token digit_token = generate_number(current, current_index);
             print_token(digit_token);
+            tokens[tokens_index] = digit_token;
+            tokens_index++;
             current_index += strlen(digit_token.value);
 
         }else if (isalpha(current[current_index])) {
-            Token *token_keyword = generate_keyword(current, current_index);
-            print_token(*token_keyword);
-            current_index += strlen(token_keyword->value);
+            Token *keyword_token = generate_keyword(current, current_index);
+            print_token(*keyword_token);
+            tokens[tokens_index] = *keyword_token;
+                tokens_index++;
+            current_index += strlen(keyword_token->value);
 
         }else {
             printf("ERROR: UNRECOGNIZED CHARACTER\n");
             exit(-1);
         }
     }
+    return tokens;
 }
 int main() {
     FILE *file;
     file = fopen("test.txt", "r");
-    lexer(file);
-
+    Token *tokens = lexer(file);
+    for(size_t i = 0; tokens[0].value[i]; i++){
+        printf("%c\n", tokens[0].value[i]);
+    }
+    
 
 }
 
