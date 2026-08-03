@@ -143,6 +143,9 @@ Token *lexer(FILE *file) {
                 tokens_index++;
             current_index += strlen(keyword_token->value);
 
+        }else if (isspace(current[current_index])) {
+            current_index++;
+
         }else {
             printf("ERROR: UNRECOGNIZED CHARACTER\n");
             exit(-1);
@@ -159,8 +162,7 @@ int main() {
         printf("%s", tokens[tokens_index].value);
         printf("\n");
         tokens_index++;
-    }
-    printf("\n"); 
+    } 
 
 }
 

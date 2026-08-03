@@ -671,3 +671,123 @@ skipped rather than merely unprinted.
          }else {
              current_index++;
 ```
+
+## 2026-08-03 00:23 — main.c
+
+Adding a trailing newline to `test.txt` made the lexer bail out with "UNRECOGNIZED CHARACTER", since the dispatch chain had no case for whitespace and everything unmatched fell through to the fatal `else`. Whitespace is now skipped explicitly, which also lets the lexer accept spaces and multi-line source.
+
+```diff
+--- main.c (before)
++++ main.c (after)
+@@ -16,6 +16,7 @@
+ } Token;
+ 
+ void print_token(Token token) {
++    printf("TOKEN VALUE: ");
+     for (int i = 0; token.value[i] != '\0'; i++){
+         printf("%c", token.value[i]);
+     }
+@@ -69,13 +70,13 @@
+     return token;
+ }
+ 
+-void lexer(FILE *file) {
++Token *lexer(FILE *file) {
+     int length;
+     char *buffer = 0;
+ 
+     if (file == NULL) {
+         printf("Error reading file\n");
+-        return;
++        exit(-2);
+     }
+     fseek(file, 0, SEEK_END);
+     length = ftell(file);
+@@ -87,6 +88,9 @@
+     char *current = buffer;
+     int current_index = 0;
+ 
++    Token *tokens = malloc(sizeof(Token) * 12);
++    size_t tokens_index = 0;
++
+     while (current[current_index] != '\0') {
+         //printf("curr: %c\n", current[current_index]);
+         if (current[current_index] == ';') {
+@@ -97,31 +101,68 @@
+             semi_token->value[0] = current[current_index];
+             semi_token->value[1] = '\0';
+             print_token(*semi_token);
++            tokens[tokens_index] = *semi_token;
++            tokens_index++;
+             current_index++;
++
+         }else if (current[current_index] == '(') {
+             printf("FOUND OPEN PAREN\n");
++            Token *opar_token = malloc(sizeof(Token));
++            opar_token->type = SEPARATOR;
++            opar_token->value = malloc(sizeof(char) * 2);
++            opar_token->value[0] = current[current_index];
++            opar_token->value[1] = '\0';
++            print_token(*opar_token);
++            tokens[tokens_index] = *opar_token;
++            tokens_index++;
+             current_index++;
++
+         }else if (current[current_index] == ')') {
+             printf("FOUND CLOSE PAREN\n");
++            Token *clopar_token = malloc(sizeof(Token));
++            clopar_token->type = SEPARATOR;
++            clopar_token->value = malloc(sizeof(char) * 2);
++            clopar_token->value[0] = current[current_index];
++            clopar_token->value[1] = '\0';
++            print_token(*clopar_token);
++            tokens[tokens_index] = *clopar_token;
++            tokens_index++;
+             current_index++;
++
+         }else if (isdigit(current[current_index])) {
+-            Token test_token = generate_number(current, current_index);
+-            print_token(test_token);
+-            current_index += strlen(test_token.value);
++            Token digit_token = generate_number(current, current_index);
++            print_token(digit_token);
++            tokens[tokens_index] = digit_token;
++            tokens_index++;
++            current_index += strlen(digit_token.value);
++
+         }else if (isalpha(current[current_index])) {
+-            Token *token_keyword = generate_keyword(current, current_index);
+-            print_token(*token_keyword);
+-            current_index += strlen(token_keyword->value);
++            Token *keyword_token = generate_keyword(current, current_index);
++            print_token(*keyword_token);
++            tokens[tokens_index] = *keyword_token;
++                tokens_index++;
++            current_index += strlen(keyword_token->value);
++
++        }else if (isspace(current[current_index])) {
++            current_index++;
++
+         }else {
+-            current_index++;
++            printf("ERROR: UNRECOGNIZED CHARACTER\n");
++            exit(-1);
+         }
+     }
++    return tokens;
+ }
+ int main() {
+     FILE *file;
+     file = fopen("test.txt", "r");
+-    lexer(file);
+-
++    Token *tokens = lexer(file);
++    int tokens_index = 0;
++    while(tokens[tokens_index].value != '\0'){
++        printf("%s", tokens[tokens_index].value);
++        printf("\n");
++        tokens_index++;
++    } 
+ 
+ }
+```
