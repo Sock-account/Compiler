@@ -154,10 +154,13 @@ int main() {
     FILE *file;
     file = fopen("test.txt", "r");
     Token *tokens = lexer(file);
-    for(size_t i = 0; tokens[0].value[i]; i++){
-        printf("%c\n", tokens[0].value[i]);
+    int tokens_index = 0;
+    while(tokens[tokens_index].value != '\0'){
+        printf("%s", tokens[tokens_index].value);
+        printf("\n");
+        tokens_index++;
     }
-    
+    printf("\n"); 
 
 }
 
