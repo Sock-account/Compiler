@@ -7,14 +7,14 @@ typedef enum {
     INT,
     KEYWORD,
     SEPARATOR,
-
+    OPERATOR,
+    END_OF_TOKENS,
 } TokenType;
 
 typedef struct {
     TokenType type;
     char *value;
 } Token;
-
 void print_token(Token token) {
     printf("TOKEN VALUE: ");
     for (int i = 0; token.value[i] != '\0'; i++){
